@@ -227,6 +227,15 @@ export const CHANNELS: Channel[] = [
     quality: "HD",
   },
   {
+    id: "kbc",
+    name: "KBC Gwangju",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/SMPTE_Color_Bars.svg/1024px-SMPTE_Color_Bars.svg.png",
+    streamUrl: "https://www.youtube-nocookie.com/embed/4hpUbFP13-M?autoplay=1&enablejsapi=1&rel=0",
+    category: "News",
+    description: "내일의 희망을 만드는 KBC 광주방송입니다.",
+    quality: "FHD",
+  },
+  {
     id: "test",
     name: "SIGNAL TEST",
     logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/SMPTE_Color_Bars.svg/1024px-SMPTE_Color_Bars.svg.png",
