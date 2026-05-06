@@ -44,6 +44,7 @@ function LogoWithFallback({ src, name }: { src: string | undefined, name: string
 }
 
 export default function App() {
+  const [isAppLoading, setIsAppLoading] = useState(true);
   const [channels, setChannels] = useState<Channel[]>(() => {
     const saved = localStorage.getItem('oburiG_channels');
     if (saved) {
@@ -55,7 +56,7 @@ export default function App() {
     }
     return CHANNELS;
   });
-  
+
   const [activeChannel, setActiveChannel] = useState<Channel>(channels[0] || CHANNELS[0]);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
@@ -71,6 +72,21 @@ export default function App() {
     description: '',
     quality: 'FHD'
   });
+
+  useEffect(() => {
+    // Initial system boot sequence
+    const timer = setTimeout(() => {
+      setIsAppLoading(false);
+    }, 1500);
+
+    // Pre-warm active channel logo
+    if (activeChannel.logo) {
+      const img = new Image();
+      img.src = activeChannel.logo;
+    }
+
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     localStorage.setItem('oburiG_channels', JSON.stringify(channels));
@@ -137,17 +153,75 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-black text-white font-sans selection:bg-blue-500/30 overflow-x-hidden">
-      {/* Dynamic Background Atmosphere */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        <div 
-          className="absolute top-1/4 -left-1/4 w-[80vw] h-[80vw] bg-blue-600/20 rounded-full blur-[120px] mix-blend-screen transition-all duration-1000" 
-          style={{ transform: `translate(${activeChannel.id === 'mbc' ? '20%' : '-10%'}, ${activeChannel.id === 'sbs' ? '10%' : '0%'})` }}
-        />
-        <div className="absolute -bottom-1/4 -right-1/4 w-[70vw] h-[70vw] bg-indigo-900/40 rounded-full blur-[100px] mix-blend-screen" />
-        <div className="absolute top-0 inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(255,255,255,0.05)_0%,transparent_50%)]" />
-      </div>
+      <AnimatePresence mode="wait">
+        {isAppLoading ? (
+          <motion.div 
+            key="splash"
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.8, ease: [0.65, 0, 0.35, 1] }}
+            className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#010101]"
+          >
+            <motion.div 
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 1, ease: "easeOut" }}
+              className="flex flex-col items-center gap-6"
+            >
+              <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl flex items-center justify-center font-black text-2xl shadow-[0_0_50px_rgba(37,99,235,0.4)]">
+                O
+              </div>
+              <div className="space-y-4 text-center">
+                <h1 className="text-3xl font-black tracking-tighter italic">oburiG TV</h1>
+                <div className="flex flex-col items-center gap-1">
+                  <div className="flex items-center gap-2 overflow-hidden w-48 h-0.5 bg-white/5 rounded-full">
+                    <motion.div 
+                      initial={{ x: "-100%" }}
+                      animate={{ x: "0%" }}
+                      transition={{ duration: 1.5, ease: "easeInOut" }}
+                      className="w-full h-full bg-blue-500"
+                    />
+                  </div>
+                  <span className="text-[10px] font-black text-blue-500/50 uppercase tracking-[0.5em] mt-2 translate-x-[0.25em]">
+                    System Booting
+                  </span>
+                </div>
+              </div>
+            </motion.div>
+            
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.5 }}
+              className="absolute bottom-12 flex flex-col items-center gap-2 opacity-20"
+            >
+              <div className="flex items-center gap-4 text-[8px] font-black tracking-[0.2em] uppercase">
+                <span>Core: V3.4.1</span>
+                <span>•</span>
+                <span>Signal: Encrypted</span>
+                <span>•</span>
+                <span>Node: AIS-CLD</span>
+              </div>
+            </motion.div>
+          </motion.div>
+        ) : (
+          <motion.div 
+            key="main"
+            initial={{ opacity: 0, scale: 0.99 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          >
+            {/* Dynamic Background Atmosphere */}
+            <div className="fixed inset-0 pointer-events-none overflow-hidden">
+              <div 
+                className="absolute top-1/4 -left-1/4 w-[80vw] h-[80vw] bg-blue-600/20 rounded-full blur-[120px] mix-blend-screen transition-all duration-1000" 
+                style={{ transform: `translate(${activeChannel.id === 'mbc' ? '20%' : '-10%'}, ${activeChannel.id === 'sbs' ? '10%' : '0%'})` }}
+              />
+              <div className="absolute -bottom-1/4 -right-1/4 w-[70vw] h-[70vw] bg-indigo-900/40 rounded-full blur-[100px] mix-blend-screen" />
+              <div className="absolute top-0 inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(255,255,255,0.05)_0%,transparent_50%)]" />
+            </div>
 
-      <nav className="relative z-40 flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-white/5 bg-black/20 backdrop-blur-md">
+            <nav className="relative z-40 flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-white/5 bg-black/20 backdrop-blur-md">
         <div className="flex items-center gap-4 sm:gap-8">
           <div className="flex items-center gap-2">
             <div className="w-7 h-7 sm:w-8 sm:h-8 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center font-black text-[10px] sm:text-xs shadow-lg shadow-blue-500/20">
@@ -558,6 +632,9 @@ export default function App() {
           </div>
         </div>
       </footer>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
