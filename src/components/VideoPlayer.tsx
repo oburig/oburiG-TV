@@ -27,13 +27,17 @@ export default function VideoPlayer({ url, poster, className }: VideoPlayerProps
   const [reloadToggle, setReloadToggle] = useState(0);
 
   const isYouTube = url.includes('youtube.com') || url.includes('youtu.be') || url.includes('youtube-nocookie.com');
+  const isDirectStream = url.toLowerCase().includes('.m3u8') || url.toLowerCase().includes('.mp4');
+  const isGenericIframe = !isYouTube && !isDirectStream && (url.includes('jtbc.co.kr') || url.includes('sbs.co.kr') || url.includes('kbs.co.kr') || url.includes('imbc.com'));
+  const useIframe = isYouTube || isGenericIframe;
+
   const finalUrl = isYouTube 
     ? `${url}${url.includes('?') ? '&' : '?'}origin=${encodeURIComponent(window.location.origin)}&widget_referrer=${encodeURIComponent(window.location.href)}${reloadToggle > 0 ? `&t=${reloadToggle}` : ''}`
     : url;
-  const isMixedContent = !isYouTube && url.startsWith('http://') && window.location.protocol === 'https:';
+  const isMixedContent = !useIframe && url.startsWith('http://') && window.location.protocol === 'https:';
 
   useEffect(() => {
-    if (isYouTube) {
+    if (useIframe) {
       setIsLoading(false);
       setLoadError(null);
       return;
@@ -205,19 +209,106 @@ export default function VideoPlayer({ url, poster, className }: VideoPlayerProps
     }
   };
 
-  const toggleFullscreen = () => {
-    if (!containerRef.current) return;
+  const isPlayingRef = useRef(isPlaying);
+  useEffect(() => {
+    isPlayingRef.current = isPlaying;
+  }, [isPlaying]);
 
-    if (!document.fullscreenElement) {
-      containerRef.current.requestFullscreen().catch(err => {
-        console.error(`Error attempting to enable full-screen mode: ${err.message}`);
-      });
-      setIsFullscreen(true);
+  const toggleFullscreen = () => {
+    const container = containerRef.current;
+    const video = videoRef.current;
+    if (!container) return;
+
+    if (!document.fullscreenElement && 
+        !(document as any).webkitFullscreenElement && 
+        !(document as any).msFullscreenElement) {
+      
+      // Try container first
+      const requestFullscreen = 
+        container.requestFullscreen || 
+        (container as any).webkitRequestFullscreen || 
+        (container as any).msRequestFullscreen;
+      
+      if (requestFullscreen) {
+        requestFullscreen.call(container).catch((err: any) => {
+          console.log("Container fullscreen failed, trying video element:", err);
+          // Fallback to video element (especially for iOS)
+          if (video && (video as any).webkitEnterFullscreen) {
+            (video as any).webkitEnterFullscreen();
+          }
+        });
+      } else if (video && (video as any).webkitEnterFullscreen) {
+        (video as any).webkitEnterFullscreen();
+      }
     } else {
-      document.exitFullscreen();
-      setIsFullscreen(false);
+      const exitFullscreen = 
+        document.exitFullscreen || 
+        (document as any).webkitExitFullscreen || 
+        (document as any).msExitFullscreen;
+      
+      if (exitFullscreen) {
+        exitFullscreen.call(document);
+      }
     }
   };
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(
+        !!document.fullscreenElement || 
+        !!(document as any).webkitFullscreenElement || 
+        !!(document as any).msFullscreenElement
+      );
+    };
+
+    const handleOrientationChange = () => {
+      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+      if (!isMobile) return;
+
+      // Use a brief timeout to ensure window dimensions are updated
+      setTimeout(() => {
+        const isLandscape = window.innerWidth > window.innerHeight;
+        const isCurrentlyFullscreen = !!(document.fullscreenElement || (document as any).webkitFullscreenElement);
+
+        if (isLandscape && !isCurrentlyFullscreen && isPlayingRef.current) {
+          // Try to go fullscreen on landscape orientation if already playing
+          toggleFullscreen();
+        } else if (!isLandscape && isCurrentlyFullscreen) {
+          // Exit fullscreen on portrait orientation
+          toggleFullscreen();
+        }
+      }, 200);
+    };
+
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+    document.addEventListener('mozfullscreenchange', handleFullscreenChange);
+    document.addEventListener('MSFullscreenChange', handleFullscreenChange);
+    window.addEventListener('orientationchange', handleOrientationChange);
+    window.addEventListener('resize', handleOrientationChange);
+    
+    const video = videoRef.current;
+    const onWebkitBegin = () => setIsFullscreen(true);
+    const onWebkitEnd = () => setIsFullscreen(false);
+
+    if (video) {
+      video.addEventListener('webkitbeginfullscreen', onWebkitBegin);
+      video.addEventListener('webkitendfullscreen', onWebkitEnd);
+    }
+
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFullscreenChange);
+      document.removeEventListener('webkitfullscreenchange', handleFullscreenChange);
+      document.removeEventListener('mozfullscreenchange', handleFullscreenChange);
+      document.removeEventListener('MSFullscreenChange', handleFullscreenChange);
+      if (video) {
+        video.removeEventListener('webkitbeginfullscreen', onWebkitBegin);
+        video.removeEventListener('webkitendfullscreen', onWebkitEnd);
+      }
+      window.removeEventListener('orientationchange', handleOrientationChange);
+      window.removeEventListener('resize', handleOrientationChange);
+    };
+  }, []);
 
   const handleMouseMove = () => {
     setShowControls(true);
@@ -257,21 +348,39 @@ export default function VideoPlayer({ url, poster, className }: VideoPlayerProps
       onMouseMove={handleMouseMove}
       onMouseLeave={() => isPlaying && setShowControls(false)}
     >
-      {isYouTube && finalUrl ? (
-        <iframe
-          key={url}
-          src={finalUrl}
-          className="w-full h-full border-none"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-          allowFullScreen
-          referrerPolicy="strict-origin-when-cross-origin"
-        />
-      ) : (!isYouTube && url) ? (
+      {useIframe && finalUrl ? (
+        <div className="w-full h-full relative">
+          <iframe
+            key={url}
+            src={finalUrl}
+            className="w-full h-full border-none"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowFullScreen
+            referrerPolicy="no-referrer"
+          />
+          {isGenericIframe && (
+            <div className="absolute top-4 left-4 right-4 flex justify-center z-10 pointer-events-none">
+              <div className="bg-black/60 backdrop-blur-md px-4 py-2 rounded-full border border-white/10 shadow-2xl pointer-events-auto flex items-center gap-3">
+                <span className="text-[10px] font-bold text-white/80 whitespace-nowrap">방송사 보안 정책으로 화면이 나오지 않을 수 있습니다</span>
+                <a 
+                  href={url} 
+                  target="_blank" 
+                  rel="noreferrer"
+                  className="bg-blue-600 hover:bg-blue-500 text-white px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-tighter transition-all shadow-lg shadow-blue-600/30"
+                >
+                  새 창에서 보기
+                </a>
+              </div>
+            </div>
+          )}
+        </div>
+      ) : (!useIframe && url) ? (
         <video
           ref={videoRef}
           poster={poster}
           className="w-full h-full object-contain"
           onClick={togglePlay}
+          onDoubleClick={toggleFullscreen}
           onPlay={() => setIsPlaying(true)}
           onPause={() => setIsPlaying(false)}
           playsInline
@@ -438,7 +547,7 @@ export default function VideoPlayer({ url, poster, className }: VideoPlayerProps
 
               <button 
                 onClick={toggleFullscreen}
-                className="p-2 sm:p-3 bg-white/5 hover:bg-white/10 rounded-xl transition-all text-white"
+                className="p-3 bg-white/5 hover:bg-white/10 rounded-xl transition-all text-white active:scale-95 touch-manipulation"
               >
                 {isFullscreen ? <Minimize size={20} className="sm:w-6 sm:h-6" /> : <Maximize size={20} className="sm:w-6 sm:h-6" />}
               </button>
@@ -462,10 +571,10 @@ export default function VideoPlayer({ url, poster, className }: VideoPlayerProps
           </button>
           <button 
             onClick={toggleFullscreen}
-            className="p-2 bg-black/50 backdrop-blur-md hover:bg-black/80 rounded-lg transition-all text-white/70 hover:text-white border border-white/10"
+            className="p-3 bg-black/50 backdrop-blur-md hover:bg-black/80 rounded-lg transition-all text-white/70 hover:text-white border border-white/10 active:scale-95 touch-manipulation"
             title="전체화면"
           >
-            {isFullscreen ? <Minimize size={16} /> : <Maximize size={16} />}
+            {isFullscreen ? <Minimize size={18} /> : <Maximize size={18} />}
           </button>
         </div>
       )}

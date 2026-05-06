@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { CHANNELS } from './constants';
 import { Channel } from './types';
 import VideoPlayer from './components/VideoPlayer';
@@ -114,12 +114,10 @@ export default function App() {
 
   const handleDeleteChannel = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    if (confirm('정말로 이 채널을 삭제하시겠습니까?')) {
-      const newChannels = channels.filter(c => c.id !== id);
-      setChannels(newChannels);
-      if (activeChannel.id === id) {
-        setActiveChannel(newChannels[0] || CHANNELS[0]);
-      }
+    const newChannels = channels.filter(c => c.id !== id);
+    setChannels(newChannels);
+    if (activeChannel.id === id) {
+      setActiveChannel(newChannels[0] || CHANNELS[0]);
     }
   };
 
@@ -280,39 +278,20 @@ export default function App() {
               <p className="text-[10px] font-bold text-white/20">{filteredChannels.length}개의 채널이 검색되었습니다.</p>
             </div>
             
-            <div className="flex items-center gap-2">
-              {/* Mobile Category Dropdown */}
-              <div className="relative sm:hidden">
+            <div className="flex items-center gap-3">
+              <div className="relative group">
                 <select
                   value={selectedCategory}
                   onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="appearance-none bg-white/5 border border-white/10 rounded-xl px-4 py-2 pr-10 text-[10px] font-black uppercase tracking-wider text-white/80 focus:outline-none focus:border-blue-500/50 transition-all min-w-[120px]"
+                  className="appearance-none bg-white/5 border border-white/10 rounded-xl px-5 py-2.5 pr-10 text-[10px] font-black uppercase tracking-widest text-white/80 hover:text-white hover:bg-white/10 focus:outline-none focus:border-blue-500/50 transition-all min-w-[160px] cursor-pointer shadow-lg"
                 >
                   {categories.map((cat) => (
-                    <option key={cat} value={cat} className="bg-zinc-950 text-white">
+                    <option key={cat} value={cat} className="bg-[#0a0a0a] text-white">
                       {cat}
                     </option>
                   ))}
                 </select>
-                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 pointer-events-none" size={12} />
-              </div>
-
-              {/* Desktop Category Buttons */}
-              <div className="hidden sm:flex items-center gap-2 overflow-x-auto pb-0 hide-scrollbar scroll-smooth">
-                {categories.map((cat) => (
-                  <button
-                    key={cat}
-                    onClick={() => setSelectedCategory(cat)}
-                    className={cn(
-                      "px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider transition-all whitespace-nowrap",
-                      selectedCategory === cat 
-                        ? "bg-blue-600 text-white shadow-lg shadow-blue-600/30" 
-                        : "bg-white/5 text-white/40 hover:bg-white/10 hover:text-white/60"
-                    )}
-                  >
-                    {cat}
-                  </button>
-                ))}
+                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-white/30 pointer-events-none group-hover:text-white/60 transition-colors" size={14} />
               </div>
             </div>
           </div>
@@ -534,17 +513,17 @@ export default function App() {
                             <p className="text-[9px] text-white/30 font-bold uppercase tracking-widest">{channel.category}</p>
                           </div>
                         </div>
-                        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div className="flex items-center gap-1">
                           <button 
                             onClick={(e) => startEdit(channel, e)}
-                            className="p-2 hover:bg-blue-500/20 text-blue-500 rounded-lg transition-colors"
+                            className="p-2.5 bg-white/5 hover:bg-blue-500/20 text-blue-500/60 hover:text-blue-500 rounded-xl transition-all border border-white/5 active:scale-90"
                             title="수정"
                           >
                             <Edit2 size={14} />
                           </button>
                           <button 
                             onClick={(e) => handleDeleteChannel(channel.id, e)}
-                            className="p-2 hover:bg-red-500/20 text-red-500 rounded-lg transition-colors"
+                            className="p-2.5 bg-white/5 hover:bg-red-500/20 text-red-500/60 hover:text-red-500 rounded-xl transition-all border border-white/5 active:scale-90"
                             title="삭제"
                           >
                             <Trash2 size={14} />
