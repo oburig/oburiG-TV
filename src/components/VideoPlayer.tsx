@@ -356,7 +356,7 @@ export default function VideoPlayer({ url, poster, className }: VideoPlayerProps
             className="w-full h-full border-none"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
             allowFullScreen
-            referrerPolicy="no-referrer"
+            referrerPolicy={isYouTube ? "strict-origin-when-cross-origin" : "no-referrer"}
           />
           {isGenericIframe && (
             <div className="absolute top-4 left-4 right-4 flex justify-center z-10 pointer-events-none">
