@@ -45,19 +45,27 @@ function LogoWithFallback({ src, name }: { src: string | undefined, name: string
 
 export default function App() {
   const [isAppLoading, setIsAppLoading] = useState(true);
+  const VERSION = "2.0"; // 데이터 업데이트를 위한 버전
+
   const [channels, setChannels] = useState<Channel[]>(() => {
     const saved = localStorage.getItem('oburiG_channels');
-    if (saved) {
+    const savedVersion = localStorage.getItem('oburiG_version');
+
+    if (saved && savedVersion === VERSION) {
       try {
         return JSON.parse(saved);
       } catch (e) {
         return CHANNELS;
       }
     }
+    // 버전이 다르거나 데이터가 없으면 새 CHANNELS 사용
+    localStorage.setItem('oburiG_version', VERSION);
+    localStorage.setItem('oburiG_channels', JSON.stringify(CHANNELS));
     return CHANNELS;
   });
 
   const [activeChannel, setActiveChannel] = useState<Channel>(channels[0] || CHANNELS[0]);
+  const [kbsStreamUrl, setKbsStreamUrl] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -91,6 +99,22 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem('oburiG_channels', JSON.stringify(channels));
   }, [channels]);
+
+  useEffect(() => {
+    if (activeChannel.kbsCode) {
+      setKbsStreamUrl(null); // Reset while loading
+      fetch(`https://cfpwwwapi.kbs.co.kr/api/v1/landing/live/channel_code/${activeChannel.kbsCode}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data?.channel_item?.[0]?.service_url) {
+            setKbsStreamUrl(data.channel_item[0].service_url);
+          }
+        })
+        .catch(err => console.error("KBS fetch error:", err));
+    } else {
+      setKbsStreamUrl(null);
+    }
+  }, [activeChannel]);
 
   const categories = useMemo(() => {
     const cats = ['All', ...new Set(channels.map(c => c.category))];
@@ -309,7 +333,7 @@ export default function App() {
             >
               <div key={activeChannel.id}>
                 <VideoPlayer 
-                  url={activeChannel.streamUrl} 
+                  url={kbsStreamUrl || activeChannel.streamUrl} 
                   className="ring-1 ring-white/10 overflow-hidden rounded-xl sm:rounded-2xl shadow-2xl shadow-blue-500/10"
                 />
               </div>

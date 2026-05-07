@@ -6,6 +6,7 @@ export interface Channel {
   category: string;
   description: string;
   quality: "UHD" | "FHD" | "HD";
+  kbsCode?: string;
 }
 
 export interface Program {

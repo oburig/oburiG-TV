@@ -53,37 +53,63 @@ export default function ChannelGrid({ channels, activeChannel, onSelect }: Chann
     );
   }
 
+  // Group channels by category
+  const categories = ["EBS", "KBS", "MBC", "SBS", "기타", "Radio", "Debug"];
+  
   return (
-    <div className="grid grid-cols-3 xs:grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 xl:grid-cols-12 gap-2 sm:gap-3 p-3 sm:p-5 bg-white/[0.02] backdrop-blur-sm rounded-3xl border border-white/5">
-      {channels.map((channel) => (
-        <motion.button
-          key={channel.id}
-          whileHover={{ y: -3, scale: 1.02 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={() => onSelect(channel)}
-          className={cn(
-            "relative group flex flex-col items-center justify-center p-2 rounded-2xl border transition-all duration-300",
-            activeChannel.id === channel.id
-              ? "bg-blue-600/10 border-blue-500/40 shadow-[0_10px_30px_rgba(59,130,246,0.15)] ring-1 ring-blue-500/20"
-              : "bg-white/[0.03] border-white/5 hover:bg-white/[0.06] hover:border-white/10"
-          )}
-        >
-          <ChannelLogo channel={channel} isActive={activeChannel.id === channel.id} />
-          <span className={cn(
-            "text-[9px] font-black tracking-tighter uppercase whitespace-nowrap overflow-hidden text-ellipsis w-full px-1 text-center",
-            activeChannel.id === channel.id ? "text-blue-400" : "text-white/40 group-hover:text-white/70"
-          )}>
-            {channel.name}
-          </span>
-          
-          {activeChannel.id === channel.id && (
-            <motion.div 
-              layoutId="activeIndicator"
-              className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-4 h-1 bg-blue-500 rounded-full" 
-            />
-          )}
-        </motion.button>
-      ))}
+    <div className="space-y-8 p-3 sm:p-5 bg-white/[0.01] backdrop-blur-sm rounded-3xl border border-white/5">
+      {categories.map((category) => {
+        const categoryChannels = channels.filter(c => 
+          category === "기타" 
+            ? !["EBS", "KBS", "MBC", "SBS", "Radio", "Debug"].includes(c.category)
+            : c.category === category
+        );
+
+        if (categoryChannels.length === 0) return null;
+
+        return (
+          <div key={category} className="space-y-3">
+            <div className="flex items-center gap-2 pl-1">
+              <div className="w-1 h-4 bg-blue-500 rounded-full" />
+              <h2 className="text-sm font-black text-blue-500 uppercase tracking-wider">
+                {category === "Debug" ? "SYSTEM TEST" : category}
+              </h2>
+            </div>
+            
+            <div className="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 gap-2 sm:gap-3">
+              {categoryChannels.map((channel) => (
+                <motion.button
+                  key={channel.id}
+                  whileHover={{ y: -3, scale: 1.02 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => onSelect(channel)}
+                  className={cn(
+                    "relative group flex flex-col items-center justify-center p-2.5 rounded-xl border transition-all duration-300 min-h-[80px]",
+                    activeChannel.id === channel.id
+                      ? "bg-blue-600/10 border-blue-500/40 shadow-[0_10px_30px_rgba(59,130,246,0.15)] ring-1 ring-blue-500/10"
+                      : "bg-white/[0.03] border-white/5 hover:bg-white/[0.06] hover:border-white/10"
+                  )}
+                >
+                  <ChannelLogo channel={channel} isActive={activeChannel.id === channel.id} />
+                  <span className={cn(
+                    "text-[11px] sm:text-[12px] font-bold tracking-tight uppercase whitespace-nowrap overflow-hidden text-ellipsis w-full px-1 text-center mt-1",
+                    activeChannel.id === channel.id ? "text-blue-400" : "text-white/50 group-hover:text-white"
+                  )}>
+                    {channel.name}
+                  </span>
+                  
+                  {activeChannel.id === channel.id && (
+                    <motion.div 
+                      layoutId="activeIndicator"
+                      className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-4 h-1 bg-blue-500 rounded-full" 
+                    />
+                  )}
+                </motion.button>
+              ))}
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 }
