@@ -176,7 +176,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white font-sans selection:bg-blue-500/30 overflow-x-hidden">
+    <div className="min-h-screen bg-black text-white font-sans selection:bg-blue-500/30">
       <AnimatePresence mode="wait">
         {isAppLoading ? (
           <motion.div 
@@ -245,197 +245,194 @@ export default function App() {
               <div className="absolute top-0 inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(255,255,255,0.05)_0%,transparent_50%)]" />
             </div>
 
-            <nav className="sticky top-0 z-[100] flex items-center justify-between px-4 sm:px-6 h-[56px] sm:h-[72px] border-b border-white/5 bg-black/95 backdrop-blur-xl">
-        <div className="flex items-center gap-4 sm:gap-8">
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 sm:w-8 sm:h-8 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center font-black text-[10px] sm:text-xs shadow-lg shadow-blue-500/20">
-              O
-            </div>
-            <h1 className="text-lg sm:text-xl font-black tracking-tighter italic">oburiG TV</h1>
-          </div>
-          
-          <div className="hidden lg:flex items-center gap-6 text-[10px] font-bold uppercase tracking-widest text-white/40">
-            <div className="flex items-center gap-2">
-              <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
-              SYSTEM OPERATIONAL
-            </div>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2 sm:gap-4">
-          <div className="relative hidden md:block">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40" size={14} />
-            <input 
-              type="text"
-              placeholder="채널 검색..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="bg-white/5 border border-white/10 rounded-full py-1.5 pl-9 pr-4 text-[10px] font-bold focus:outline-none focus:border-blue-500/50 transition-all w-40 lg:w-60"
-            />
-            {searchQuery && (
-              <button 
-                onClick={() => setSearchQuery('')}
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-white/40 hover:text-white"
-              >
-                <X size={12} />
-              </button>
-            )}
-          </div>
-
-          <button 
-            onClick={() => setIsSettingsOpen(true)}
-            className="p-2 text-white/60 hover:text-white transition-colors"
-          >
-            <Settings size={18} />
-          </button>
-          <button className="p-2 text-white/60 hover:text-white transition-colors">
-            <User size={18} />
-          </button>
-          <div className="h-6 sm:h-8 w-px bg-white/10" />
-          <div className="flex items-center gap-2 px-2 sm:px-3 py-1 sm:py-1.5 bg-white/5 border border-white/10 rounded-full text-[8px] sm:text-[10px] font-bold">
-            <Signal size={10} className="text-green-500 animate-pulse" />
-            <span className="text-white/80 hidden xs:inline">STABLE NETWORK</span>
-            <span className="text-white/80 xs:hidden">STABLE</span>
-          </div>
-        </div>
-      </nav>
-
-      <main className="relative z-10 max-w-[1700px] mx-auto px-3 sm:px-6 pb-20">
-        <div className="space-y-8 sm:space-y-12">
-        {/* Sticky Header Section (Search + Player + Info + Filters) */}
-        <div className="sticky top-[56px] sm:top-[72px] z-[90] bg-[#0a0a0a] pt-3 pb-4 -mx-3 sm:-mx-6 px-3 sm:px-6 border-b border-white/10 space-y-4 sm:space-y-6 shadow-2xl shadow-black/80">
-          {/* Mobile Search Bar - Compact */}
-          <div className="md:hidden relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40" size={12} />
-            <input 
-              type="text"
-              placeholder="채널 검색..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-white/5 border border-white/10 rounded-lg py-2 pl-9 pr-4 text-[10px] font-bold focus:outline-none focus:border-blue-500/50 transition-all"
-            />
-          </div>
-
-          {/* Main Player Section */}
-          <section className="space-y-3 sm:space-y-4">
-            <div className="w-full max-w-[1200px] mx-auto">
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={activeChannel.id}
-                  initial={{ opacity: 0, scale: 0.99 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 1.01 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <VideoPlayer 
-                    url={kbsStreamUrl || activeChannel.streamUrl} 
-                    className="ring-1 ring-white/10 overflow-hidden rounded-lg sm:rounded-2xl shadow-2xl shadow-blue-500/10 aspect-video bg-black mx-auto"
-                  />
-                </motion.div>
-              </AnimatePresence>
-            </div>
-
-            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 px-1">
-              <div className="flex items-center gap-3">
-                <div className="h-6 flex items-center">
-                  <LogoWithFallback src={activeChannel.logo} name={activeChannel.name} />
-                </div>
-                <div className="h-4 w-px bg-white/20" />
-                <div className="flex flex-col">
+            {/* Combined Sticky Header (Nav + Player + Info) */}
+            <header className="sticky top-0 z-[100] bg-[#0a0a0a]/95 backdrop-blur-xl border-b border-white/10 shadow-2xl shadow-black/60">
+              <nav className="flex items-center justify-between px-4 sm:px-6 h-[56px] sm:h-[72px] border-b border-white/5">
+                <div className="flex items-center gap-4 sm:gap-8">
                   <div className="flex items-center gap-2">
-                    <span className="bg-red-600 text-[7px] font-bold px-1 py-0.5 rounded shadow-sm">LIVE</span>
-                    <h2 className="text-white font-bold text-sm sm:text-base tracking-tight uppercase italic truncate max-w-[140px] sm:max-w-none">{activeChannel.name}</h2>
+                    <div className="w-7 h-7 sm:w-8 sm:h-8 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center font-black text-[10px] sm:text-xs shadow-lg shadow-blue-500/20">
+                      O
+                    </div>
+                    <h1 className="text-lg sm:text-xl font-black tracking-tighter italic">oburiG TV</h1>
                   </div>
-                  <p className="hidden sm:block text-[10px] text-white/40 font-medium">
-                    {activeChannel.description || 'oburiG TV 실시간 프리미엄 방송'} • {activeChannel.quality} 송출 중
-                  </p>
+                  <div className="hidden lg:flex items-center gap-6 text-[10px] font-bold uppercase tracking-widest text-white/40">
+                    <div className="flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
+                      SYSTEM OPERATIONAL
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 sm:gap-4">
+                  <div className="relative hidden md:block">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40" size={14} />
+                    <input 
+                      type="text"
+                      placeholder="채널 검색..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="bg-white/5 border border-white/10 rounded-full py-1.5 pl-9 pr-4 text-[10px] font-bold focus:outline-none focus:border-blue-500/50 transition-all w-40 lg:w-60"
+                    />
+                    {searchQuery && (
+                      <button 
+                        onClick={() => setSearchQuery('')}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 text-white/40 hover:text-white"
+                      >
+                        <X size={12} />
+                      </button>
+                    )}
+                  </div>
+
+                  <button 
+                    onClick={() => setIsSettingsOpen(true)}
+                    className="p-2 text-white/60 hover:text-white transition-colors"
+                  >
+                    <Settings size={18} />
+                  </button>
+                  <button className="p-2 text-white/60 hover:text-white transition-colors">
+                    <User size={18} />
+                  </button>
+                  <div className="h-6 sm:h-8 w-px bg-white/10" />
+                  <div className="flex items-center gap-2 px-2 sm:px-3 py-1 sm:py-1.5 bg-white/5 border border-white/10 rounded-full text-[8px] sm:text-[10px] font-bold">
+                    <Signal size={10} className="text-green-500 animate-pulse" />
+                    <span className="text-white/80 hidden xs:inline">STABLE NETWORK</span>
+                    <span className="text-white/80 xs:hidden">STABLE</span>
+                  </div>
+                </div>
+              </nav>
+
+              <div className="max-w-[1700px] mx-auto px-4 sm:px-6 pt-3 pb-4 space-y-4">
+                {/* Mobile Search Bar - Compact */}
+                <div className="md:hidden relative">
+                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40" size={12} />
+                  <input 
+                    type="text"
+                    placeholder="채널 검색..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full bg-white/10 border border-white/10 rounded-lg py-2 pl-9 pr-4 text-[10px] font-bold focus:outline-none focus:border-blue-500/50 transition-all"
+                  />
+                </div>
+
+                {/* Compact Player + Info Section */}
+                <div className="flex flex-col xl:flex-row gap-4 items-center xl:items-start">
+                  <div className="w-full xl:w-[60%] 2xl:w-[70%]">
+                    <AnimatePresence mode="wait">
+                      <motion.div
+                        key={activeChannel.id}
+                        initial={{ opacity: 0, scale: 0.99 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 1.01 }}
+                        transition={{ duration: 0.3 }}
+                      >
+                        <VideoPlayer 
+                          url={kbsStreamUrl || activeChannel.streamUrl} 
+                          className="ring-1 ring-white/10 overflow-hidden rounded-lg sm:rounded-2xl shadow-xl aspect-video bg-black mx-auto"
+                        />
+                      </motion.div>
+                    </AnimatePresence>
+                  </div>
+
+                  <div className="flex-1 w-full space-y-4">
+                    <div className="flex flex-col sm:flex-row xl:flex-col justify-between xl:justify-start gap-4 h-full">
+                      <div className="flex items-start gap-3">
+                        <div className="h-10 sm:h-12 flex items-center shrink-0">
+                          <LogoWithFallback src={activeChannel.logo} name={activeChannel.name} />
+                        </div>
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="bg-red-600 text-[8px] font-bold px-1.5 py-0.5 rounded shadow-sm">LIVE</span>
+                            <h2 className="text-white font-bold text-base sm:text-xl tracking-tight uppercase italic truncate">{activeChannel.name}</h2>
+                          </div>
+                          <p className="text-[10px] sm:text-xs text-white/50 font-medium line-clamp-2 leading-relaxed">
+                            {activeChannel.description || 'oburiG TV 실시간 프리미엄 방송'} • {activeChannel.quality} 해상도 송출 중
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex flex-row sm:flex-col xl:flex-row items-center gap-2 shrink-0">
+                        <button className="flex-1 sm:flex-none justify-center flex items-center gap-2 px-4 py-2 bg-white text-black rounded-lg text-[10px] font-bold uppercase tracking-wider hover:bg-white/90 transition-all">
+                          <Share2 size={12} />
+                          공유
+                        </button>
+                        <button className="flex-1 sm:flex-none justify-center flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-[10px] font-bold text-white transition-all">
+                          <Info size={12} />
+                          정보
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Compact Filter Header */}
+                    <div className="flex items-center justify-between gap-4 pt-2 border-t border-white/10">
+                      <div className="flex items-center gap-2">
+                        <h2 className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/30 truncate">Channels</h2>
+                        <span className="text-[9px] font-medium text-white/10 px-2 py-0.5 border border-white/5 rounded-full whitespace-nowrap">{filteredChannels.length} ON AIR</span>
+                      </div>
+                      <div className="relative min-w-[140px]">
+                        <select
+                          value={selectedCategory}
+                          onChange={(e) => setSelectedCategory(e.target.value)}
+                          className="w-full appearance-none bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 pr-8 text-[10px] font-bold uppercase tracking-wider text-white/80 hover:text-white transition-all cursor-pointer"
+                        >
+                          {categories.map((cat) => (
+                            <option key={cat} value={cat} className="bg-[#0a0a0a] text-white text-xs">
+                              {cat.toUpperCase()}
+                            </option>
+                          ))}
+                        </select>
+                        <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 text-white/30 pointer-events-none" size={12} />
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
+            </header>
 
-              <div className="flex items-center gap-2">
-                <button className="flex-1 sm:flex-none justify-center flex items-center gap-1.5 px-3 py-1.5 bg-white text-black rounded-md text-[9px] font-bold uppercase hover:bg-white/90 transition-all">
-                  <Share2 size={10} />
-                  공유
-                </button>
-                <button className="flex-1 sm:flex-none justify-center flex items-center gap-1.5 px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-md text-[9px] font-bold text-white transition-all">
-                  <Info size={10} />
-                  정보
-                </button>
-              </div>
-            </div>
-          </section>
+            <main className="relative z-10 max-w-[1700px] mx-auto px-4 sm:px-6 pt-4 pb-20">
+              <div className="relative">
+                {/* Channel Selection Grid (Scrollable part) */}
+                <section className="px-1 py-1">
+                  <ChannelGrid 
+                    channels={filteredChannels} 
+                    activeChannel={activeChannel} 
+                    onSelect={setActiveChannel} 
+                  />
+                </section>
 
-          {/* Channel Filters Header - More Compact */}
-          <section className="flex items-center justify-between gap-4 pt-1">
-            <div className="flex items-center gap-2">
-              <h2 className="text-[9px] font-bold uppercase tracking-[0.15em] text-white/30 hidden xs:block">Broadcasting Channels</h2>
-              <span className="text-[8px] font-medium text-white/10 hidden sm:inline px-2 py-0.5 border border-white/5 rounded-full">{filteredChannels.length} Channels</span>
-            </div>
-            
-            <div className="flex items-center gap-2 flex-1 sm:flex-none">
-              <div className="relative flex-1 sm:flex-none">
-                <select
-                  value={selectedCategory}
-                  onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="w-full appearance-none bg-white/5 border border-white/10 rounded-md px-3 py-1.5 pr-8 text-[9px] font-bold uppercase tracking-wider text-white/70 hover:text-white focus:outline-none transition-all cursor-pointer"
-                >
-                  {categories.map((cat) => (
-                    <option key={cat} value={cat} className="bg-[#0a0a0a] text-white text-xs">
-                      {cat.toUpperCase()}
-                    </option>
-                  ))}
-                </select>
-                <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 text-white/30 pointer-events-none" size={10} />
-              </div>
-            </div>
-          </section>
-        </div>
+                {/* Informational Section */}
+                <section className="grid md:grid-cols-3 gap-6 mt-16 pb-12">
+                  <div className="p-6 bg-white/5 rounded-2xl border border-white/5 space-y-3">
+                    <div className="w-10 h-10 bg-blue-500/20 rounded-full flex items-center justify-center text-blue-400">
+                      <Signal size={20} />
+                    </div>
+                    <h3 className="font-bold text-sm">초고화질 UHD 송출</h3>
+                    <p className="text-xs text-white/40 leading-relaxed">
+                      독자적인 압축 기술을 통해 저대역폭에서도 끊김 없는 4K UHD 화질을 제공합니다. 네트워크 환경에 따라 자동으로 해상도가 조절됩니다.
+                    </p>
+                  </div>
+                  
+                  <div className="p-6 bg-white/5 rounded-2xl border border-white/5 space-y-3">
+                    <div className="w-10 h-10 bg-indigo-500/20 rounded-full flex items-center justify-center text-indigo-400">
+                      <Tv size={20} />
+                    </div>
+                    <h3 className="font-bold text-sm">스마트 TV 미러링</h3>
+                    <p className="text-xs text-white/40 leading-relaxed">
+                      플레이어 하단의 'TV 연결' 버튼을 눌러 주변의 스마트 TV나 크롬캐스트 기기로 영상을 즉시 전송할 수 있습니다.
+                    </p>
+                  </div>
 
-          <div className="relative">
-            {/* Channel Selection Grid (Scrollable part) */}
-            <section className="px-1 py-1">
-              <ChannelGrid 
-                channels={filteredChannels} 
-                activeChannel={activeChannel} 
-                onSelect={setActiveChannel} 
-              />
-            </section>
-
-            {/* Informational Section */}
-            <section className="grid md:grid-cols-3 gap-6 mt-12">
-              <div className="p-6 bg-white/5 rounded-2xl border border-white/5 space-y-3">
-                <div className="w-10 h-10 bg-blue-500/20 rounded-full flex items-center justify-center text-blue-400">
-                  <Signal size={20} />
-                </div>
-                <h3 className="font-bold text-sm">초고화질 UHD 송출</h3>
-                <p className="text-xs text-white/40 leading-relaxed">
-                  독자적인 압축 기술을 통해 저대역폭에서도 끊김 없는 4K UHD 화질을 제공합니다. 네트워크 환경에 따라 자동으로 해상도가 조절됩니다.
-                </p>
+                  <div className="p-6 bg-white/5 rounded-2xl border border-white/5 space-y-3">
+                    <div className="w-10 h-10 bg-purple-500/20 rounded-full flex items-center justify-center text-purple-400">
+                      <Activity size={20} />
+                    </div>
+                    <h3 className="font-bold text-sm">공중파 통합 플랫폼</h3>
+                    <p className="text-xs text-white/40 leading-relaxed">
+                      KBS, MBC, SBS, EBS 등 대한민국의 주요 공중파 방송을 한 곳에서 편리하게 시청하세요. 채널 관리자를 통해 커스텀 채널을 추가할 수 있습니다.
+                    </p>
+                  </div>
+                </section>
               </div>
-              
-              <div className="p-6 bg-white/5 rounded-2xl border border-white/5 space-y-3">
-                <div className="w-10 h-10 bg-indigo-500/20 rounded-full flex items-center justify-center text-indigo-400">
-                  <Tv size={20} />
-                </div>
-                <h3 className="font-bold text-sm">스마트 TV 미러링</h3>
-                <p className="text-xs text-white/40 leading-relaxed">
-                  플레이어 하단의 'TV 연결' 버튼을 눌러 주변의 스마트 TV나 크롬캐스트 기기로 영상을 즉시 전송할 수 있습니다.
-                </p>
-              </div>
-
-              <div className="p-6 bg-white/5 rounded-2xl border border-white/5 space-y-3">
-                <div className="w-10 h-10 bg-purple-500/20 rounded-full flex items-center justify-center text-purple-400">
-                  <Activity size={20} />
-                </div>
-                <h3 className="font-bold text-sm">공중파 통합 플랫폼</h3>
-                <p className="text-xs text-white/40 leading-relaxed">
-                  KBS, MBC, SBS, EBS 등 대한민국의 주요 공중파 방송을 한 곳에서 편리하게 시청하세요. 채널 관리자를 통해 커스텀 채널을 추가할 수 있습니다.
-                </p>
-              </div>
-            </section>
-          </div>
-        </div>
-      </main>
+            </main>
 
       {/* Settings Modal */}
       <AnimatePresence>
