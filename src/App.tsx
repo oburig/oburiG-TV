@@ -23,7 +23,8 @@ import {
   Trash2,
   Edit2,
   Globe,
-  Activity
+  Activity,
+  RefreshCw
 } from 'lucide-react';
 import { cn } from './lib/utils';
 
@@ -175,8 +176,64 @@ export default function App() {
     }
   };
 
+  const [pullStartY, setPullStartY] = useState<number | null>(null);
+  const [pullMoveY, setPullMoveY] = useState(0);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (window.scrollY === 0) {
+      setPullStartY(e.touches[0].clientY);
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (pullStartY !== null) {
+      const currentY = e.touches[0].clientY;
+      const diff = currentY - pullStartY;
+      if (diff > 0) {
+        setPullMoveY(Math.min(diff * 0.4, 80));
+      }
+    }
+  };
+
+  const handleTouchEnd = () => {
+    if (pullMoveY >= 60 && !isRefreshing) {
+      setIsRefreshing(true);
+      setIsAppLoading(true);
+      setTimeout(() => {
+        setSearchQuery('');
+        setSelectedCategory('All');
+        setPullMoveY(0);
+        setIsRefreshing(false);
+        setIsAppLoading(false);
+      }, 1500);
+    } else {
+      setPullMoveY(0);
+    }
+    setPullStartY(null);
+  };
+
   return (
-    <div className="min-h-screen bg-black text-white font-sans selection:bg-blue-500/30">
+    <div 
+      className="min-h-screen bg-black text-white font-sans selection:bg-blue-500/30 touch-pan-y"
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+    >
+      {/* Pull to Refresh Indicator */}
+      <div 
+        className="fixed top-0 left-0 right-0 z-[200] flex justify-center pointer-events-none transition-all duration-300"
+        style={{ 
+          height: pullMoveY > 0 ? pullMoveY : 0, 
+          opacity: pullMoveY / 60,
+          transform: `translateY(${pullMoveY > 0 ? 0 : -20}px)`
+        }}
+      >
+        <div className="mt-4 bg-blue-600 p-2 rounded-full shadow-lg shadow-blue-500/40">
+          <RefreshCw size={20} className={cn("text-white", (isRefreshing || pullMoveY >= 60) && "animate-spin")} />
+        </div>
+      </div>
+
       <AnimatePresence mode="wait">
         {isAppLoading ? (
           <motion.div 
@@ -231,9 +288,9 @@ export default function App() {
         ) : (
           <motion.div 
             key="main"
-            initial={{ opacity: 0, scale: 0.99 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
           >
             {/* Dynamic Background Atmosphere */}
             <div className="fixed inset-0 pointer-events-none overflow-hidden">
@@ -246,7 +303,7 @@ export default function App() {
             </div>
 
             {/* Combined Sticky Header (Nav + Player + Info) */}
-            <header className="sticky top-0 z-[100] bg-[#0a0a0a]/95 backdrop-blur-xl border-b border-white/10 shadow-2xl shadow-black/60">
+            <header className="sticky top-0 z-[100] bg-[#0a0a0a]/98 backdrop-blur-2xl border-b border-white/10 shadow-2xl shadow-black/80">
               <nav className="flex items-center justify-between px-4 sm:px-6 h-[56px] sm:h-[72px] border-b border-white/5">
                 <div className="flex items-center gap-4 sm:gap-8">
                   <div className="flex items-center gap-2">
@@ -310,19 +367,19 @@ export default function App() {
                     placeholder="채널 검색..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full bg-white/10 border border-white/10 rounded-lg py-2 pl-9 pr-4 text-[10px] font-bold focus:outline-none focus:border-blue-500/50 transition-all"
+                    className="w-full bg-white/5 border border-white/10 rounded-lg py-2 pl-9 pr-4 text-[10px] font-bold focus:outline-none focus:border-blue-500/50 transition-all"
                   />
                 </div>
 
                 {/* Compact Player + Info Section */}
                 <div className="flex flex-col xl:flex-row gap-4 items-center xl:items-start">
-                  <div className="w-full xl:w-[60%] 2xl:w-[70%]">
+                  <div className="w-full xl:w-[60%] 2xl:w-[65%]">
                     <AnimatePresence mode="wait">
                       <motion.div
                         key={activeChannel.id}
-                        initial={{ opacity: 0, scale: 0.99 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 1.01 }}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
                         transition={{ duration: 0.3 }}
                       >
                         <VideoPlayer 
