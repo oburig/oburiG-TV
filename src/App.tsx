@@ -477,24 +477,25 @@ export default function App() {
                     {editingChannel ? '방송 채널 수정' : '신규 방송 채널 등록'}
                   </h3>
                   
-                  <form onSubmit={handleAddOrUpdateChannel} className="space-y-4">
-                    <div className="grid grid-cols-2 gap-4">
+                  <form onSubmit={handleAddOrUpdateChannel} className="space-y-5">
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black uppercase tracking-widest text-blue-500/60 ml-1">01. 방송국 명칭</label>
+                      <input 
+                        required
+                        value={formState.name}
+                        onChange={e => setFormState({...formState, name: e.target.value})}
+                        placeholder="예: KBS 1TV, SBS Golf 등"
+                        className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-xs font-bold focus:ring-1 focus:ring-blue-500 outline-none transition-all placeholder:text-white/10 shadow-inner"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div className="space-y-1.5">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-white/20 ml-2">방송국 명칭</label>
-                        <input 
-                          required
-                          value={formState.name}
-                          onChange={e => setFormState({...formState, name: e.target.value})}
-                          placeholder="예: SBS Golf"
-                          className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-xs focus:ring-1 focus:ring-blue-500 outline-none transition-all placeholder:text-white/10"
-                        />
-                      </div>
-                      <div className="space-y-1.5">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-white/20 ml-2">스트리밍 화질</label>
+                        <label className="text-[10px] font-black uppercase tracking-widest text-white/20 ml-2">02. 스트리밍 화질</label>
                         <select 
                           value={formState.quality}
                           onChange={e => setFormState({...formState, quality: e.target.value as any})}
-                          className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-xs focus:ring-1 focus:ring-blue-500 outline-none transition-all appearance-none"
+                          className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-xs focus:ring-1 focus:ring-blue-500 outline-none transition-all appearance-none cursor-pointer"
                         >
                           <option value="UHD">UHD (4K)</option>
                           <option value="FHD">FHD (1080p)</option>
@@ -502,48 +503,47 @@ export default function App() {
                           <option value="SD">SD (480p)</option>
                         </select>
                       </div>
+                      <div className="space-y-1.5">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-white/20 ml-2">03. 카테고리</label>
+                        <select 
+                          value={formState.category}
+                          onChange={e => setFormState({...formState, category: e.target.value as any})}
+                          className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-xs focus:ring-1 focus:ring-blue-500 outline-none transition-all appearance-none cursor-pointer"
+                        >
+                          {['General', 'News', 'Drama', 'Sports', 'Entertainment', 'Culture', 'Education'].map(cat => (
+                            <option key={cat} value={cat}>{cat.toUpperCase()}</option>
+                          ))}
+                        </select>
+                      </div>
                     </div>
 
                     <div className="space-y-1.5">
-                      <label className="text-[10px] font-black uppercase tracking-widest text-white/20 ml-2">방송 송출 주소 (HLS/m3u8 또는 YouTube)</label>
+                      <label className="text-[10px] font-black uppercase tracking-widest text-white/20 ml-2">04. 방송 송출 주소 (HLS/m3u8 또는 YouTube)</label>
                       <input 
                         required
                         value={formState.streamUrl}
                         onChange={e => setFormState({...formState, streamUrl: e.target.value})}
-                        placeholder="https://domain.com/index.m3u8"
+                        placeholder="https://.../index.m3u8"
                         className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-xs focus:ring-1 focus:ring-blue-500 outline-none transition-all placeholder:text-white/10"
                       />
                     </div>
 
-                    <div className="space-y-1.5">
-                      <label className="text-[10px] font-black uppercase tracking-widest text-white/20 ml-2">방송국 로고 URL</label>
-                      <input 
-                        value={formState.logo}
-                        onChange={e => setFormState({...formState, logo: e.target.value})}
-                        placeholder="https://.../logo.png"
-                        className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-xs focus:ring-1 focus:ring-blue-500 outline-none transition-all placeholder:text-white/10"
-                      />
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div className="space-y-1.5">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-white/20 ml-2">카테고리</label>
-                        <select 
-                          value={formState.category}
-                          onChange={e => setFormState({...formState, category: e.target.value as any})}
-                          className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-xs focus:ring-1 focus:ring-blue-500 outline-none transition-all appearance-none"
-                        >
-                          {['General', 'News', 'Drama', 'Sports', 'Entertainment', 'Culture', 'Education'].map(cat => (
-                            <option key={cat} value={cat}>{cat}</option>
-                          ))}
-                        </select>
+                        <label className="text-[10px] font-black uppercase tracking-widest text-white/20 ml-2">05. 방송국 로고 URL</label>
+                        <input 
+                          value={formState.logo}
+                          onChange={e => setFormState({...formState, logo: e.target.value})}
+                          placeholder="https://.../logo.png"
+                          className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-xs focus:ring-1 focus:ring-blue-500 outline-none transition-all placeholder:text-white/10"
+                        />
                       </div>
                       <div className="space-y-1.5">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-white/20 ml-2">방송 설명</label>
+                        <label className="text-[10px] font-black uppercase tracking-widest text-white/20 ml-2">06. 방송 설명</label>
                         <input 
                           value={formState.description}
                           onChange={e => setFormState({...formState, description: e.target.value})}
-                          placeholder="채널에 대한 간단한 설명"
+                          placeholder="간단한 설명 (선택사항)"
                           className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-xs focus:ring-1 focus:ring-blue-500 outline-none transition-all placeholder:text-white/10"
                         />
                       </div>
