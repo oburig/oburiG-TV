@@ -18,14 +18,14 @@ export default function ChannelGrid({ channels, activeChannel, onSelect }: Chann
   }
 
   // Group channels by category
-  const categories = ["EBS", "KBS", "MBC", "SBS", "기타", "Radio", "Debug"];
+  const categories = ["EBS", "KBS", "MBC", "SBS", "기타", "Radio", "OTT", "Debug"];
   
   return (
     <div className="space-y-8 p-3 sm:p-5 bg-white/[0.01] backdrop-blur-sm rounded-3xl border border-white/5">
       {categories.map((category) => {
         const categoryChannels = channels.filter(c => 
           category === "기타" 
-            ? !["EBS", "KBS", "MBC", "SBS", "Radio", "Debug"].includes(c.category)
+            ? !["OTT", "EBS", "KBS", "MBC", "SBS", "Radio", "Debug"].includes(c.category)
             : c.category === category
         );
 
@@ -55,11 +55,17 @@ export default function ChannelGrid({ channels, activeChannel, onSelect }: Chann
                   )}
                 >
                   <span className={cn(
-                    "text-[13px] sm:text-[14px] font-bold tracking-tight uppercase whitespace-nowrap overflow-hidden text-ellipsis w-full text-center transition-colors duration-300",
+                    "relative z-10 text-[13px] sm:text-[14px] font-bold tracking-tight uppercase whitespace-nowrap overflow-hidden text-ellipsis w-full text-center transition-colors duration-300",
                     activeChannel.id === channel.id ? "text-blue-400" : "text-white/60 group-hover:text-white"
                   )}>
                     {channel.name}
                   </span>
+
+                  {channel.isExternal && (
+                    <div className="absolute top-1 right-1 p-0.5 bg-white/5 rounded text-[7px] font-black uppercase text-white/40 tracking-tighter">
+                      OUT
+                    </div>
+                  )}
                   
                   {activeChannel.id === channel.id && (
                     <motion.div 

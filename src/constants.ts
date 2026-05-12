@@ -99,6 +99,59 @@ export const CHANNELS: Channel[] = [
   
   { id: "ytn", name: "YTN NEWS", logo: "https://iptv-org.github.io/logos/languages/kor/YTN.png", streamUrl: "https://www.youtube-nocookie.com/embed/aZyD6EPl6KU?autoplay=1&enablejsapi=1&rel=0", category: "기타", description: "24시간 뉴스 채널", quality: "FHD" },
   { id: "yonhap", name: "Yonhap News TV", logo: "https://iptv-org.github.io/logos/languages/kor/YonhapNewsTV.png", streamUrl: "https://www.youtube-nocookie.com/embed/6QZ_qc75ihU?autoplay=1&enablejsapi=1&rel=0", category: "기타", description: "대한민국 대표 뉴스 채널", quality: "FHD" },
+  { id: "jtbc_news", name: "JTBC NEWS", logo: "https://iptv-org.github.io/logos/languages/kor/JTBC.png", streamUrl: "https://www.youtube-nocookie.com/embed/live_stream?channel=UC8ocwO-aJ0zFAt-8onSssXw&autoplay=1", category: "기타", description: "다채로운 즐거움 JTBC 뉴스", quality: "FHD" },
+  { id: "tvn", name: "tvN", logo: "https://iptv-org.github.io/logos/languages/kor/tvN.png", streamUrl: "https://tvn.cjenm.com/ko/onair/", category: "기타", description: "No.1 K-콘텐츠 채널 (로그인 필요)", quality: "FHD", isExternal: true },
+
+  // --- OTT ---
+  { 
+    id: "ott_youtube", 
+    name: "YouTube Music", 
+    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/YouTube_full-color_icon_%282017%29.svg/1024px-YouTube_full-color_icon_%282017%29.svg.png", 
+    streamUrl: "https://www.youtube.com/embed/playlist?list=PL4fGSI1pDJn6jWqvuxMC8LveH6re96t9P", 
+    category: "OTT", 
+    description: "유튜브 인기 음악 리스트", 
+    quality: "FHD" 
+  },
+  { 
+    id: "ott_netflix", 
+    name: "Netflix", 
+    logo: "https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg", 
+    streamUrl: "https://www.netflix.com", 
+    category: "OTT", 
+    description: "세계 최대의 OTT 서비스", 
+    quality: "UHD",
+    isExternal: true
+  },
+  { 
+    id: "ott_disney", 
+    name: "Disney+", 
+    logo: "https://upload.wikimedia.org/wikipedia/commons/3/3e/Disney_Plus_logo.svg", 
+    streamUrl: "https://www.disneyplus.com", 
+    category: "OTT", 
+    description: "디즈니, 픽사, 마블, 스타워즈", 
+    quality: "UHD",
+    isExternal: true
+  },
+  { 
+    id: "ott_tving", 
+    name: "TVING", 
+    logo: "https://upload.wikimedia.org/wikipedia/commons/e/e4/Tving_logo.svg", 
+    streamUrl: "https://www.tving.com", 
+    category: "OTT", 
+    description: "넘버원 K-콘텐츠 플랫폼", 
+    quality: "FHD",
+    isExternal: true
+  },
+  { 
+    id: "ott_wavve", 
+    name: "Wavve", 
+    logo: "https://upload.wikimedia.org/wikipedia/commons/b/b8/Wavve_logo.svg", 
+    streamUrl: "https://www.wavve.com", 
+    category: "OTT", 
+    description: "지상파 통합 OTT", 
+    quality: "FHD",
+    isExternal: true
+  },
 
   // --- Debug ---
   {

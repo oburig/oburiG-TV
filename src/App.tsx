@@ -46,7 +46,7 @@ function LogoWithFallback({ src, name }: { src: string | undefined, name: string
 
 export default function App() {
   const [isAppLoading, setIsAppLoading] = useState(true);
-  const VERSION = "2.0"; // 데이터 업데이트를 위한 버전
+  const VERSION = "2.2"; // 데이터 업데이트를 위한 버전
 
   const [channels, setChannels] = useState<Channel[]>(() => {
     const saved = localStorage.getItem('oburiG_channels');
@@ -60,10 +60,18 @@ export default function App() {
       }
     }
     // 버전이 다르거나 데이터가 없으면 새 CHANNELS 사용
-    localStorage.setItem('oburiG_version', VERSION);
+    localStorage.setItem('oburiG_version', VERSION || '2.1');
     localStorage.setItem('oburiG_channels', JSON.stringify(CHANNELS));
     return CHANNELS;
   });
+
+  const handleSelectChannel = (channel: Channel) => {
+    if (channel.isExternal) {
+      window.open(channel.streamUrl, '_blank');
+      return;
+    }
+    setActiveChannel(channel);
+  };
 
   const [activeChannel, setActiveChannel] = useState<Channel>(channels[0] || CHANNELS[0]);
   const [kbsStreamUrl, setKbsStreamUrl] = useState<string | null>(null);
@@ -149,7 +157,7 @@ export default function App() {
       setChannels(prev => [...prev, newChannel]);
     }
     
-    setFormState({ name: '', streamUrl: '', logo: '', category: 'General', description: '', quality: 'FHD' });
+    setFormState({ name: '', streamUrl: '', logo: '', category: 'General', description: '', quality: 'FHD', isExternal: false });
     setEditingChannel(null);
   };
 
@@ -452,7 +460,7 @@ export default function App() {
                   <ChannelGrid 
                     channels={filteredChannels} 
                     activeChannel={activeChannel} 
-                    onSelect={setActiveChannel} 
+                    onSelect={handleSelectChannel} 
                   />
                 </section>
 
@@ -567,7 +575,7 @@ export default function App() {
                           onChange={e => setFormState({...formState, category: e.target.value as any})}
                           className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-xs focus:ring-1 focus:ring-blue-500 outline-none transition-all appearance-none cursor-pointer"
                         >
-                          {['General', 'News', 'Drama', 'Sports', 'Entertainment', 'Culture', 'Education'].map(cat => (
+                          {['OTT', 'General', 'News', 'Drama', 'Sports', 'Entertainment', 'Culture', 'Education'].map(cat => (
                             <option key={cat} value={cat}>{cat.toUpperCase()}</option>
                           ))}
                         </select>
@@ -595,15 +603,30 @@ export default function App() {
                           className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-xs focus:ring-1 focus:ring-blue-500 outline-none transition-all placeholder:text-white/10"
                         />
                       </div>
-                      <div className="space-y-1.5">
-                        <label className="text-[10px] font-black uppercase tracking-widest text-white/20 ml-2">06. 방송 설명</label>
-                        <input 
-                          value={formState.description}
-                          onChange={e => setFormState({...formState, description: e.target.value})}
-                          placeholder="간단한 설명 (선택사항)"
-                          className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-xs focus:ring-1 focus:ring-blue-500 outline-none transition-all placeholder:text-white/10"
-                        />
+                      <div className="flex flex-col justify-center gap-2 pl-2">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-white/20">07. 외부 링크 설정</label>
+                        <label className="flex items-center gap-3 cursor-pointer group">
+                          <input 
+                            type="checkbox"
+                            checked={formState.isExternal || false}
+                            onChange={e => setFormState({...formState, isExternal: e.target.checked})}
+                            className="w-5 h-5 rounded border-white/10 bg-white/5 text-blue-600 focus:ring-blue-500/50 transition-all cursor-pointer"
+                          />
+                          <span className="text-[10px] font-bold text-white/40 group-hover:text-white/60 transition-colors uppercase tracking-wider">
+                            새 창으로 열기 (임베드 불가 시)
+                          </span>
+                        </label>
                       </div>
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] font-black uppercase tracking-widest text-white/20 ml-2">06. 방송 설명</label>
+                      <input 
+                        value={formState.description}
+                        onChange={e => setFormState({...formState, description: e.target.value})}
+                        placeholder="간단한 설명 (선택사항)"
+                        className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-xs focus:ring-1 focus:ring-blue-500 outline-none transition-all placeholder:text-white/10"
+                      />
                     </div>
 
                     <div className="flex gap-4 pt-4">
@@ -618,7 +641,7 @@ export default function App() {
                           type="button"
                           onClick={() => {
                             setEditingChannel(null);
-                            setFormState({ name: '', streamUrl: '', logo: '', category: 'General', description: '', quality: 'FHD' });
+                            setFormState({ name: '', streamUrl: '', logo: '', category: 'General', description: '', quality: 'FHD', isExternal: false });
                           }}
                           className="px-6 bg-white/5 hover:bg-white/10 text-white rounded-xl text-xs font-black uppercase tracking-widest transition-all border border-white/5"
                         >
