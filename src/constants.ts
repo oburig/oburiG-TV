@@ -63,6 +63,8 @@ export const CHANNELS: Channel[] = [
   { id: "sbs_cjb_fm", name: "CJB 청주 FM", logo: "https://iptv-org.github.io/logos/languages/kor/SBS.png", streamUrl: "http://1.222.207.80:1935/live/cjbradio/playlist.m3u8", category: "Radio", description: "지역 라디오", quality: "HD" },
   { id: "sbs_jibs", name: "JIBS 제주 TV", logo: "https://iptv-org.github.io/logos/languages/kor/SBS.png", streamUrl: "http://123.140.197.22/stream/1/play.m3u8", category: "SBS", description: "SBS 네트워크", quality: "HD" },
   { id: "sbs_jibs_fm", name: "JIBS 제주 FM", logo: "https://iptv-org.github.io/logos/languages/kor/SBS.png", streamUrl: "http://123.140.197.22/stream/2/play.m3u8", category: "Radio", description: "지역 라디오", quality: "HD" },
+  { id: "sbs_tjb", name: "TJB 대전방송", logo: "https://iptv-org.github.io/logos/languages/kor/SBS.png", streamUrl: "http://114.108.136.216:1935/live/tjbtv/playlist.m3u8", category: "SBS", description: "SBS 네트워크", quality: "HD" },
+  { id: "sbs_tjb_fm", name: "TJB 대전 FM (파워FM)", logo: "https://iptv-org.github.io/logos/languages/kor/SBS.png", streamUrl: "http://114.108.136.216:1935/live/tjb_ra/playlist.m3u8", category: "Radio", description: "지역 라디오", quality: "HD" },
 
   // --- Etc ---
   { id: "tvchosun", name: "TV CHOSUN", logo: "https://iptv-org.github.io/logos/languages/kor/TVChosun.png", streamUrl: "https://onaircdn.tvchosun.com/origin1/_definst_/tvchosun_s1/playlist.m3u8", category: "기타", description: "종합편성 채널", quality: "FHD" },

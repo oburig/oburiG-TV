@@ -46,7 +46,7 @@ function LogoWithFallback({ src, name }: { src: string | undefined, name: string
 
 export default function App() {
   const [isAppLoading, setIsAppLoading] = useState(true);
-  const VERSION = "2.2"; // 데이터 업데이트를 위한 버전
+  const VERSION = "2.3"; // 데이터 업데이트를 위한 버전
 
   const [channels, setChannels] = useState<Channel[]>(() => {
     const saved = localStorage.getItem('oburiG_channels');
@@ -66,7 +66,8 @@ export default function App() {
   });
 
   const handleSelectChannel = (channel: Channel) => {
-    if (channel.isExternal) {
+    const isHttp = channel.streamUrl && channel.streamUrl.startsWith('http://');
+    if (channel.isExternal || isHttp) {
       window.open(channel.streamUrl, '_blank');
       return;
     }

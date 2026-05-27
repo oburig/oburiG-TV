@@ -61,7 +61,7 @@ export default function ChannelGrid({ channels, activeChannel, onSelect }: Chann
                     {channel.name}
                   </span>
 
-                  {channel.isExternal && (
+                  {(channel.isExternal || (channel.streamUrl && channel.streamUrl.startsWith('http://'))) && (
                     <div className="absolute top-1 right-1 p-0.5 bg-white/5 rounded text-[7px] font-black uppercase text-white/40 tracking-tighter">
                       OUT
                     </div>
