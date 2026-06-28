@@ -113,7 +113,7 @@ export default function App() {
   useEffect(() => {
     if (activeChannel.kbsCode) {
       setKbsStreamUrl(null); // Reset while loading
-      fetch(`https://cfpwwwapi.kbs.co.kr/api/v1/landing/live/channel_code/${activeChannel.kbsCode}`)
+      fetch(`/api/kbs/${activeChannel.kbsCode}`)
         .then(res => res.json())
         .then(data => {
           if (data?.channel_item?.[0]?.service_url) {
@@ -311,9 +311,9 @@ export default function App() {
               <div className="absolute top-0 inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(255,255,255,0.05)_0%,transparent_50%)]" />
             </div>
 
-            {/* Combined Sticky Header (Nav + Player + Info) */}
+            {/* Sticky Navigation Bar */}
             <header className="sticky top-0 z-[100] bg-[#0a0a0a]/98 backdrop-blur-2xl border-b border-white/10 shadow-2xl shadow-black/80">
-              <nav className="flex items-center justify-between px-4 sm:px-6 h-[56px] sm:h-[72px] border-b border-white/5">
+              <nav className="flex items-center justify-between px-4 sm:px-6 h-[56px] sm:h-[72px]">
                 <div className="flex items-center gap-4 sm:gap-8">
                   <div className="flex items-center gap-2">
                     <div className="w-7 h-7 sm:w-8 sm:h-8 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center font-black text-[10px] sm:text-xs shadow-lg shadow-blue-500/20">
@@ -366,8 +366,11 @@ export default function App() {
                   </div>
                 </div>
               </nav>
+            </header>
 
-              <div className="max-w-[1700px] mx-auto px-4 sm:px-6 pt-3 pb-4 space-y-4">
+            {/* Video Player + Active Channel Details (Natural Scroll Flow) */}
+            <section className="border-b border-white/5 bg-[#050505]/40 pb-4 sm:pb-6">
+              <div className="max-w-[1700px] mx-auto px-4 sm:px-6 pt-3 pb-2 space-y-4">
                 {/* Mobile Search Bar - Compact */}
                 <div className="md:hidden relative">
                   <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40" size={12} />
@@ -452,7 +455,7 @@ export default function App() {
                   </div>
                 </div>
               </div>
-            </header>
+            </section>
 
             <main className="relative z-10 max-w-[1700px] mx-auto px-4 sm:px-6 pt-4 pb-20">
               <div className="relative">
