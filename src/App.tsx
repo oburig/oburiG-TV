@@ -74,7 +74,9 @@ export default function App() {
     setActiveChannel(channel);
   };
 
-  const [activeChannel, setActiveChannel] = useState<Channel>(channels[0] || CHANNELS[0]);
+  const [activeChannel, setActiveChannel] = useState<Channel>(() => {
+    return channels.find(c => c.id === 'kbs1') || channels[0] || CHANNELS[0];
+  });
   const [kbsStreamUrl, setKbsStreamUrl] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
@@ -113,7 +115,7 @@ export default function App() {
   useEffect(() => {
     if (activeChannel.kbsCode) {
       setKbsStreamUrl(null); // Reset while loading
-      fetch(`/api/kbs/${activeChannel.kbsCode}`)
+      fetch(`https://cfpwwwapi.kbs.co.kr/api/v1/landing/live/channel_code/${activeChannel.kbsCode}`)
         .then(res => res.json())
         .then(data => {
           if (data?.channel_item?.[0]?.service_url) {

@@ -18,7 +18,7 @@ export default function ChannelGrid({ channels, activeChannel, onSelect }: Chann
   }
 
   // Group channels by category
-  const categories = ["EBS", "KBS", "MBC", "SBS", "기타", "Radio", "OTT", "Debug"];
+  const categories = ["KBS", "EBS", "MBC", "SBS", "기타", "Radio", "OTT", "Debug"];
   
   return (
     <div className="space-y-8 p-3 sm:p-5 bg-white/[0.01] backdrop-blur-sm rounded-3xl border border-white/5">
